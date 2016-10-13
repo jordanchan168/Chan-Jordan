@@ -1,27 +1,19 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
 import hashlib
+import utils.check
+import os
 
 app = Flask(__name__)
 
-def getUsers():
-    a = open("data/users.csv","r")
-    list = a.readlines()
-    dict = {}
-    for user in list:
-        entry = user.strip("\n").split(",")
-        dict[entry[0]] = entry[1]
-    a.close()
-    return dict
+app.secret_key = os.urandom(32)
 
-def addUser(user, pw):
-    a = open("data/users.csv","a")
-    a.write(str(user)+","+str(pw)+"\n")
-    a.close()
-    return
 
 @app.route("/")
 def home():
+    if ("username" in session):
+        return redirect(url_for("logged_in"))
     return render_template("index.html")
+
 
 @app.route("/login")
 def login():
@@ -32,13 +24,14 @@ def login():
 def authenticate():
     user = request.form["username"]
     pw = request.form["password"]
-    dict = getUsers()
+    dict = utils.check.getUsers()
     shaHash = hashlib.sha1()
     shaHash.update(pw)
     pwHash = shaHash.hexdigest()
     if (user in dict):
         if (dict[user] == pwHash):
-            return render_template("results.html", result="Login successful!")
+            session["username"] = user
+            return redirect(url_for("logged_in"))
     return render_template("results.html", result="Login failed!")
 
 
@@ -46,19 +39,31 @@ def authenticate():
 def register():
     return render_template("register.html")
 
+
 @app.route("/regauth", methods=["POST"])
 def regauth():
     user = request.form["username"]
     pw = request.form["password"]
-    dict = getUsers()
+    dict = utils.check.getUsers()
     shaHash = hashlib.sha1()
     shaHash.update(pw)
     pwHash = shaHash.hexdigest()
     if (user in dict):
         return render_template("regresults.html", result="The username you entered is already taken. Go back to try again.")
-    addUser(user,pwHash)
+    utils.check.addUser(user,pwHash)
     return render_template("regsuccess.html")
-    
+
+
+@app.route("/logged_in")
+def logged_in():
+    return render_template("logged_in.html", user=session["username"])
+
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.pop("username")
+    return redirect(url_for("home"))
+
 
 if __name__=="__main__":
     app.debug = True #
