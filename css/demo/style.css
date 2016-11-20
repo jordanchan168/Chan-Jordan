@@ -1,0 +1,55 @@
+body {
+    background-color: black;
+    color: lightgreen;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    text-align: center;
+}
+
+ul {
+    list-style-position: inside;
+    list-style-image: url('checkmark.gif');
+}
+
+div {
+    display: block;
+    background-color: gray;
+    position: relative;
+    width: 30%;
+    left: 35%;
+}
+
+#top {
+    border-top: 6px solid lightgreen;
+}
+
+#bottom {
+    border-bottom: 6px solid lightgreen;
+}
+
+#left {
+    border-left: 6px solid lightgreen;
+}
+
+#right {
+    border-right: 6px solid lightgreen;
+}
+
+#one {
+    letter-spacing: 0px;
+}
+
+#two {
+    letter-spacing: -5px;
+}
+
+#three {
+    letter-spacing: -10px;
+}
+
+#four {
+    letter-spacing: -15px;
+}
+
+#five {
+    letter-spacing: -20px;
+}
